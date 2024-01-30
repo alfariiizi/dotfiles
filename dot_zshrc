@@ -158,6 +158,11 @@ alias notes="nvim ~/notes"
 # === clear ===
 alias cl="clear"
 
+#	deleted:    src/components/NextauthProvider.tsx
+alias dotfile="chezmoi"
+alias de="dotfile edit"
+alias da="dotfile apply"
+
 # This is for npx
 _npx() {
   local dir=$(pwd -P)
