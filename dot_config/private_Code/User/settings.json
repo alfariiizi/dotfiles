@@ -13,8 +13,9 @@
   // ****************************** [UI] **************************************
 
   "workbench.colorCustomizations": {
-    // "editor.background": "#111",
-    // "editorGutter.background": "#222",
+    // "editor.background": "#1E1E2E", // this is catpuccin-mocha
+    "editor.background": "#161626", // this is darker version
+    "editorGutter.background": "#161626",
     // "sideBar.background": "#181818",
     // "activityBar.background": "#222",
     "tab.activeBackground": "#111"
@@ -24,7 +25,7 @@
   },
   "editor.fontSize": 15,
   "editor.minimap.enabled": false,
-  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.editor.closeEmptyGroups": true,
   "workbench.editor.splitInGroupLayout": "horizontal",
   "workbench.iconTheme": "vscode-icons",
@@ -149,6 +150,7 @@
   // For more CVIM: https://github.com/VSCodeVim/Vim/issues/8567
   "vim.flash.enable": true, // this for CVIM flash
   "vim.flash.ignorecase": true, // this for CVIM flash
+  "vim.flash.labels": "asdfghjklqwertyuiopzxcvbnm",
   "vim.sneak": true,
   "vim.smartcase": true,
   "vim.handleKeys": {
@@ -193,7 +195,12 @@
     //   ]
     // },
     {
-      "before": ["<Esc>"], // to exit from search mode
+      "before": ["<space>", "<space>"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      // "before": ["<Esc>"], // to exit from search mode
+      "before": ["<leader>", "n"], // to exit from search mode
       "commands": [":nohl"]
     },
     {
@@ -211,6 +218,15 @@
     {
       "before": ["k"],
       "after": ["g", "k"]
+    },
+
+    {
+      "before": ["<c-d>"],
+      "after": ["<c-d>", "z", "z"]
+    },
+    {
+      "before": ["<c-u>"],
+      "after": ["<c-u>", "z", "z"]
     },
 
     {
@@ -412,7 +428,7 @@
       "commands": ["workbench.action.files.save"]
     },
     {
-      "before": ["<leader>", "e"],
+      "before": ["<leader>", "u", "e"],
       "commands": ["workbench.action.toggleSidebarVisibility"]
     },
     {

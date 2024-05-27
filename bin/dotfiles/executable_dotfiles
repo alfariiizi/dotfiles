@@ -6,10 +6,25 @@ import argparse
 from datetime import datetime
 
 directories = [
+    # [config]
+    # wezterm
     "~/.config/wezterm",
+    # hyprland
     "~/.config/hypr/UserConfigs",
     "~/.config/hypr/UserScripts",
+    # yazi
+    "~/.config/yazi",
+    # waybar
+    "~/.config/waybar",
+    # vscode
+    "~/.config/Code/User/settings.json",
+    "~/.config/Code/User/keybindings.json",
+
+    # [zsh]
     "~/.zshrc",
+    "~/.oh-my-zsh/custom/alfarizi",
+
+    # [script]
     "~/bin",
 ]
 
