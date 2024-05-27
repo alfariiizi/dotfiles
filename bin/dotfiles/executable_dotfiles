@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+
+import os
+import subprocess
+import argparse
+from datetime import datetime
+
+directories = [
+    "~/.config/wezterm",
+    "~/.config/hypr/UserConfigs",
+    "~/.config/hypr/UserScripts",
+    "~/.zshrc",
+    "~/bin",
+]
+
+DOTFILES_GIT_DIRECTORY = os.path.expanduser("~/.local/share/chezmoi")
+
+parser = argparse.ArgumentParser(description="Managing your dotfiles!")
+parser.add_argument('option', type=str, choices=['list', 'add', 'commit', 'push'], help='Option [list | add | commit | push]')
+args = parser.parse_args()
+
+def list_directory_watch():
+    for d in directories:
+        print(d)
+
+def add():
+    command = ['chezmoi', 'add']
+    def list_directory_contents(directory):
+        try:
+            subprocess.run([*command, directory], check=True)
+            print(f"Success add {directory}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error add {directory}: {e.stderr}")
+    for dir in directories:
+        list_directory_contents(dir)
+
+def commit():
+    now = datetime.now()
+    formatted_date_time = now.strftime("%Y-%m-%d %H:%M")
+    try:
+        isDefault = input('Default commit message (y/n)? ')
+        message = ""
+        if len(isDefault) == 0 or isDefault.lower() == 'y':
+            message = f'updated at {formatted_date_time}'
+        elif isDefault.lower() == 'n':
+            message = input('Commit message: ')
+        else:
+            print('What in the world you choose 🤦')
+            raise ValueError("Invalid input")
+        os.chdir(DOTFILES_GIT_DIRECTORY)
+        subprocess.run(['git', 'add', '.'], check=True)
+        subprocess.run(['git', 'commit', '-m', message], check=True)
+        print(f"Successfully commit the latest update of dotfiles!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error commit dotfiles: {e.stderr}")
+
+def push():
+    try:
+        os.chdir(DOTFILES_GIT_DIRECTORY)
+        subprocess.run(['git', 'push', 'origin', 'main'], check=True)
+        print(f"Successfully push the latest update of dotfiles!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error push dotfiles: {e.stderr}")
+
+if __name__ == "__main__":
+    option: str = args.option.lower()
+    match option:
+        case "list":
+            list_directory_watch()
+        case "add":
+            add()
+        case "commit":
+            commit()
+        case "push":
+            push()
+        case "_":
+            print("The option doesn't match!")
+

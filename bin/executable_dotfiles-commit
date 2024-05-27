@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+
+import os
+import subprocess
+from datetime import datetime
+
+now = datetime.now()
+formatted_date_time = now.strftime("%Y-%m-%d %H:%M")
+
+DIRECTORY = "~/.local/share/chezmoi"
+path = os.path.expanduser(DIRECTORY)
+
+try:
+    isDefault = input('Default commit message (y/n)? ')
+    message = ""
+    if len(isDefault) == 0 or isDefault.lower() == 'y':
+        message = f'updated at {formatted_date_time}'
+    elif isDefault.lower() == 'n':
+        message = input('Commit message: ')
+    else:
+        print('What in the world you choose 🤦')
+        raise ValueError("Invalid input")
+
+    os.chdir(path)
+    subprocess.run(['git', 'add', '.'], check=True)
+    subprocess.run(['git', 'commit', '-m', message], check=True)
+    print(f"Successfully commit the latest update of dotfiles!")
+except subprocess.CalledProcessError as e:
+    print(f"Error commit dotfiles: {e.stderr}")

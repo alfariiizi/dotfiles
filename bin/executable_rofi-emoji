@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+# rofi -show emoji -modi emoji:"/usr/share/rofi-emoji/clipboard-adapter.sh"
+
+# Path to the clipboard-adapter.sh
+CLIPBOARD_ADAPTER="/usr/share/rofi-emoji/clipboard-adapter.sh"
+ALL_EMOJIS="/usr/share/rofi-emoji/all_emojis.txt"
+
+# Run rofi in emoji mode, using the clipboard-adapter.sh to handle selected emojis
+selected_emoji=$(cat "$ALL_EMOJIS" | rofi -dmenu -i -p "Emoji: ")
+
+if [ -n "$selected_emoji" ]; then
+    echo -n "$selected_emoji" | "$CLIPBOARD_ADAPTER" insert
+fi

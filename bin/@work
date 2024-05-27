@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+import os
+import sys
+
+
+def change_dir(target):
+    os.chdir(target)
+    print("Changed directory to:", target)
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        path = os.path.join("~/dev/work", sys.argv[1])
+        change_dir(os.path.expanduser(path))
+    else:
+        change_dir(os.path.expanduser("~/dev/work"))

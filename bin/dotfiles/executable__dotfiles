@@ -1,0 +1,4 @@
+#compdef dotfiles
+
+_arguments \
+  '1:option:((list\:"List file/directory that have registered" add\:"Git add" commit\:"Git commit" push\:"Git push"))'
