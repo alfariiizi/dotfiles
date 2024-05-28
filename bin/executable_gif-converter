@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+
+import argparse
+import subprocess
+import os
+
+parser = argparse.ArgumentParser(description="Convert your video into gif")
+parser.add_argument('input', type=str, help='Your videos that you want to convert into. Example: some-video.webm')
+parser.add_argument('output', type=str, nargs='?', default='', help="(Optional) Your output gif name. Example: output.gif")
+parser.add_argument('-w', '--width', type=int, nargs='?', default='640', help="(Optional) Your gif output width (in pixel). Default=640. Example: 720")
+args = parser.parse_args()
+
+if __name__ == "__main__":
+    input: str = args.input
+    output: str = args.output
+    width: int = args.width
+
+    is_input_available = len(output) != 0
+
+    if(is_input_available and not '.gif' in output):
+        raise ValueError("The output name must be in gif format")
+
+    input_name = input.split('.')[0]
+    temp_name = f'{input_name}.temp.gif' # temporary name
+
+    if(not is_input_available):
+        output = f'{input_name}.gif'
+
+    try:
+        # Run ffmpeg to convert video to gif
+        subprocess.run(['ffmpeg', '-i', input, '-vf', f'fps=10,scale={width}:-1:flags=lanczos', '-c:v', 'gif', temp_name], check=True)
+        # Optimize the gif using gifsicle
+        subprocess.run(['gifsicle', '-O3', temp_name, '-o', output], check=True)
+        os.remove(temp_name)
+        print(f'Success convert and optimized {input} into {output}')
+
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to convert your video into gif")
