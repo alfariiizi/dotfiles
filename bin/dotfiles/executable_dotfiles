@@ -22,7 +22,7 @@ directories = [
 
     # [zsh]
     "~/.zshrc",
-    "~/.oh-my-zsh/custom/alfarizi",
+    "~/.config/zsh-alfarizi",
 
     # [script]
     "~/bin",

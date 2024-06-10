@@ -1,10 +1,6 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-source $HOME/.oh-my-zsh/custom/alfarizi/completion/completion.zsh
-autoload -Uz compinit
-compinit
-
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="xiong-chiamiov-plus"
@@ -14,14 +10,29 @@ plugins=(
     archlinux
     zsh-autosuggestions
     zsh-syntax-highlighting
-)
+    # zsh-autocomplete
 
-source $ZSH/oh-my-zsh.sh
+)
 
 # Check archlinux plugin commands here
 # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/archlinux
 
-
 # Display Pokemon-colorscripts
 # Project page: https://gitlab.com/phoneybadger/pokemon-colorscripts#on-other-distros-and-macos
 pokemon-colorscripts --no-title -s -r
+
+source $HOME/.config/zsh-alfarizi/completion/completion.zsh
+autoload -Uz compinit && compinit
+
+source $ZSH/oh-my-zsh.sh
+source $HOME/.config/zsh-alfarizi/init.zsh
+
+# For zoxide
+eval "$(zoxide init --cmd cd zsh)"
+
+# __zoxide_z_complete () {
+#   args=$(zoxide query -l)
+#   _arguments "1:profiles:($args)"
+# }
+# #fzf-tab config
+# zstyle ':completion:*:__zoxide_z:*' sort false
