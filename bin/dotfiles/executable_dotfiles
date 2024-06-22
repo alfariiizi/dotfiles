@@ -16,6 +16,9 @@ directories = [
     "~/.config/yazi",
     # waybar
     "~/.config/waybar",
+    # rofi
+    "~/.config/rofi",
+    "/etc/rofi.rasi",
     # vscode
     "~/.config/Code/User/settings.json",
     "~/.config/Code/User/keybindings.json",
