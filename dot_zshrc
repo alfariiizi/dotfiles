@@ -27,6 +27,9 @@ autoload -Uz compinit && compinit
 source $ZSH/oh-my-zsh.sh
 source $HOME/.config/zsh-alfarizi/init.zsh
 
+# For obsidian
+source $HOME/obsidian-key-api.sh
+
 # For zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
@@ -36,3 +39,13 @@ eval "$(zoxide init --cmd cd zsh)"
 # }
 # #fzf-tab config
 # zstyle ':completion:*:__zoxide_z:*' sort false
+
+# pnpm
+export PNPM_HOME="/home/alfarizi/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+PATH=~/.console-ninja/.bin:$PATH
