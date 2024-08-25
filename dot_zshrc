@@ -49,3 +49,5 @@ esac
 # pnpm end
 
 PATH=~/.console-ninja/.bin:$PATH
+# Turso
+export PATH="$PATH:/home/alfarizi/.turso"
