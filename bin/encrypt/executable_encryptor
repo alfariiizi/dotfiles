@@ -1,0 +1,154 @@
+#!/bin/bash
+
+# Full Project Encryption Toolkit with Advanced Exclusions
+# Version: 1.2
+
+# Paths and Configuration
+# SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+echo "Project Root: $PROJECT_ROOT"
+ENCRYPTION_ALGORITHM="aes-256-cbc"
+MASTER_KEY_FILE=".project_master_key"
+ENCRYPTED_PROJECT_ARCHIVE="encrypted_project.tar.gz.enc"
+EXCLUSION_CONFIG="${PROJECT_ROOT}/encryption_exclusions.yml"
+
+# Dependency Check
+check_dependencies() {
+    local dependencies=("openssl" "tar" "python3" "yq")
+    local missing_deps=()
+
+    for cmd in "${dependencies[@]}"; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+
+    if [ ${#missing_deps[@]} -ne 0 ]; then
+        echo "Error: Missing dependencies: ${missing_deps[*]}"
+        echo "Please install: openssl, tar, python3, and yq (YAML processor)"
+        exit 1
+    fi
+}
+
+# Generate Exclusion Arguments for Tar
+generate_exclusion_args() {
+    # Use Python to parse YAML and generate exclusion arguments
+    python3 - << EOF
+import yaml
+import sys
+
+def parse_exclusions(config_path):
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+        exclusion_categories = [
+            'global_exclusions',
+            # 'version_control',
+            'security_related',
+            'system_files',
+            'pattern_exclusions',
+            'custom_exclusions'
+        ]
+        
+        exclusions = []
+        for category in exclusion_categories:
+            if category in config:
+                if isinstance(config[category], dict):
+                    exclusions.extend(config[category].get('development_environments', []))
+                    exclusions.extend(config[category].get('file_extensions', []))
+                else:
+                    exclusions.extend(config[category])
+        
+        # Remove duplicates and prepend --exclude for tar
+        unique_exclusions = list(set(exclusions))
+        for exclusion in unique_exclusions:
+            print(f"--exclude={exclusion}")
+
+parse_exclusions('$EXCLUSION_CONFIG')
+EOF
+}
+
+# Secure Key Generation
+generate_master_key() {
+    if [ ! -f "$MASTER_KEY_FILE" ]; then
+        openssl rand -base64 64 > "$MASTER_KEY_FILE"
+        chmod 600 "$MASTER_KEY_FILE"
+        echo "Master encryption key generated securely."
+    else
+        echo "Master key already exists. Skipping generation."
+    fi
+}
+
+# Full Project Encryption with Dynamic Exclusions
+encrypt_entire_project() {
+    # Get exclusion arguments dynamically
+    EXCLUSION_ARGS=$(generate_exclusion_args)
+
+    # Create encryption metadata
+    mkdir -p .encryption_metadata
+    date -u +"%Y-%m-%d %H:%M:%S UTC" > .encryption_metadata/last_encrypted
+
+    # Compress with dynamic exclusions and encrypt
+    # shellcheck disable=SC2086
+    # tar czf - $PROJECT_ROOT/$EXCLUSION_ARGS . | \
+    tar czf - $EXCLUSION_ARGS . | \
+    openssl enc -$ENCRYPTION_ALGORITHM -salt \
+        -out "$ENCRYPTED_PROJECT_ARCHIVE" \
+        -pass file:"$MASTER_KEY_FILE"
+
+    echo "Entire project encrypted successfully."
+    echo "Excluded files/directories: $EXCLUSION_ARGS"
+}
+
+# Project Decryption
+decrypt_project() {
+    # local DECRYPT_DIR="decrypted_project_$(date +%s)"
+    local DECRYPT_DIR="."
+    mkdir -p "$DECRYPT_DIR"
+
+    openssl enc -d -$ENCRYPTION_ALGORITHM -salt \
+        -in "$ENCRYPTED_PROJECT_ARCHIVE" \
+        -out "$DECRYPT_DIR/decrypted_project.tar.gz" \
+
+    tar xzf "$DECRYPT_DIR/decrypted_project.tar.gz" -C "$DECRYPT_DIR"
+    rm -rf "$DECRYPT_DIR/decrypted_project.tar.gz"
+    rm -rf "$DECRYPT_DIR/encrypted_project.tar.gz.enc"
+
+    echo "Project decrypted to: $DECRYPT_DIR"
+}
+
+# Git Workflow Compatibility
+git_encrypt_workflow() {
+    git add "$ENCRYPTED_PROJECT_ARCHIVE"
+    git add .encryption_metadata
+    git add .gitignore
+    git add encryption_exclusions.yml
+    git rm -rf --cached . ':!.gitignore' ":!$ENCRYPTED_PROJECT_ARCHIVE" ":!.encryption_metadata"
+    # git rm -rf --cached .
+    git commit -m "Encrypted project state [$(date -u)]"
+    # git rm encrypted_project.tar.gz.enc
+}
+
+# Main Execution
+main() {
+    check_dependencies
+
+    case "$1" in
+        init)
+            generate_master_key
+            ;;
+        encrypt)
+            encrypt_entire_project
+            git_encrypt_workflow
+            ;;
+        decrypt)
+            decrypt_project
+            ;;
+        *)
+            echo "Usage: $0 {init|encrypt|decrypt}"
+            exit 1
+    esac
+}
+
+# Execute main function with provided argument
+main "$@"

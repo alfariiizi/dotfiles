@@ -1575,5 +1575,10 @@
       "command": "workbench.action.toggleZenMode"
     }
   ],
-  "typescript.enablePromptUseWorkspaceTsdk": true
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "remote.portsAttributes": {
+    "3122": {
+      "protocol": "http"
+    }
+  }
 }

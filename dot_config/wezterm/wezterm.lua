@@ -35,17 +35,90 @@ wezterm.on("restore_session", function(window)
 	session_manager.restore_state(window)
 end)
 
+-- On Startup
+local mux = wezterm.mux
+wezterm.on("gui-startup", function(cmd)
+	local tab_main, pane_main, window_main = mux.spawn_window(cmd or {})
+	window_main:spawn_tab({
+		cwd = "/home/alfarizi/notes",
+	})
+
+	local tab_config, pane_config, window_config = mux.spawn_window({
+		workspace = "config",
+		cwd = "/home/alfarizi/.config/nvim",
+	})
+	window_config:spawn_tab({
+		cwd = "/home/alfarizi/.config/wezterm",
+	})
+	window_config:spawn_tab({
+		cwd = "/home/alfarizi/.config/hypr",
+	})
+
+	local _tabkube, _paneconfigkube, window_config_kube = mux.spawn_window({
+		workspace = "kube",
+		cwd = "/home/alfarizi/dev/kube",
+	})
+	window_config_kube:spawn_tab({
+		cwd = "/home/alfarizi/dev/kube",
+	})
+	window_config_kube:spawn_tab({
+		cwd = "/home/alfarizi/dev/kube",
+	})
+	window_config_kube:spawn_tab({
+		cwd = "/home/alfarizi/dev/kube",
+	})
+
+	mux.spawn_window({
+		workspace = "personal-projects",
+		cwd = "/home/alfarizi/dev/personal-projects",
+	})
+
+	mux.spawn_window({
+		workspace = "next-playground",
+		cwd = "/home/alfarizi/dev/web-dev/next-app/next-playground",
+	})
+
+	-- mux.spawn_window({
+	-- 	workspace = "skripsi",
+	-- 	cwd = "/home/alfarizi/dev/skripsi/skripsi",
+	-- })
+end)
+
+-- Blur background of the wezterm
+wezterm.on("window-focus-changed", function()
+	os.execute(
+		"xdotool search -classname org.wezfurlong.wezterm | xargs -I{} xprop -f _KDE_NET_WM_BLUR_BEHIND_REGION 32c -set _KDE_NET_WM_BLUR_BEHIND_REGION 0 -id {}"
+	)
+end)
+
 config.color_scheme = "Tokyo Night"
 config.font = wezterm.font_with_fallback({
-	{ family = "JetBrainsMono Nerd Font", scale = 1.25, weight = "Medium" },
-	{ family = "Iosevka Nerd Font", scale = 1.2, weight = "Medium" },
-	{ family = "FantasqueSansM Nerd Font", scale = 1.3 },
+	-- { family = "JetBrainsMono Nerd Font", scale = 1.25, weight = "Medium" },
+	-- { family = "Iosevka Nerd Font", scale = 1.2, weight = "Medium" },
+	-- { family = "FantasqueSansM Nerd Font", scale = 1.3 },
+	{ family = "JetBrainsMono Nerd Font", scale = 1.02, weight = "Medium" },
+	{ family = "Iosevka Nerd Font", scale = 1.1, weight = "Medium" },
+	{ family = "FantasqueSansM Nerd Font", scale = 1.1 },
 })
-config.window_background_opacity = 0.9
+config.window_background_opacity = 0.85
+config.text_background_opacity = 0.85
 config.window_decorations = "RESIZE"
 config.window_close_confirmation = "AlwaysPrompt"
 config.scrollback_lines = 3000
 config.default_workspace = "main"
+
+-- WebGPU Adapter
+-- config.webgpu_preferred_adapter = {
+-- 	backend = "Vulkan",
+-- 	device = 7443,
+-- 	device_type = "DiscreteGpu",
+-- 	driver = "NVIDIA",
+-- 	driver_info = "550.107.02",
+-- 	name = "NVIDIA GeForce MX250",
+-- 	vendor = 4318,
+-- }
+-- config.front_end = "WebGpu"
+config.animation_fps = 120
 
 -- Dim inactive panes
 config.inactive_pane_hsb = {
@@ -60,6 +133,9 @@ config.keys = {
 	{ key = "a", mods = "LEADER|ALT", action = act.SendKey({ key = "a", mods = "ALT" }) },
 	{ key = "c", mods = "LEADER", action = act.ActivateCopyMode },
 	{ key = "phys:Space", mods = "LEADER", action = act.ActivateCommandPalette },
+
+	-- Disable ALT + Enter to toggle fullscreen
+	{ key = "Enter", mods = "ALT", action = act.SendKey({ key = "Enter", mods = "ALT" }) },
 
 	-- Disable zoom in and zoom out (it cause low resolution on wayland)
 	{ key = "=", mods = "CTRL", action = act.SendKey({ key = "a", mods = "ALT" }) },
@@ -263,5 +339,12 @@ config.window_padding = {
 
 }
 --]]
+
+config.window_padding = {
+	left = "0.5cell",
+	right = "0.5cell",
+	top = "0.5cell",
+	bottom = "0cell",
+}
 
 return config

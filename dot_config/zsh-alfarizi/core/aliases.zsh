@@ -29,3 +29,52 @@ alias @dotfiles="cd ~/.local/share/chezmoi"
 alias @bin="cd ~/bin"
 
 alias bunx="/usr/bin/bunx --bun"
+
+# [Redis]
+redis() {
+  case "$1" in
+    start)
+      redis-server --daemonize yes
+      echo "Redis started on 127.0.0.1:6379"
+      ;;
+    stop)
+      redis-cli shutdown
+      echo "Redis is stopped"
+      ;;
+    restart)
+      redis-cli shutdown && redis-server --daemonize yes
+      echo "Redis restarted on 127.0.0.1:6379"
+      ;;
+    status)
+      if redis-cli ping | grep -q "PONG"; then
+        echo "Redis is running on 127.0.0.1:6379"
+      else
+        echo "Redis is not running"
+      fi
+      ;;
+    status-all)
+      echo "Checking all Redis processes..."
+      ps aux | grep redis
+      ;;
+    *)
+      echo "Usage: redis {start|stop|restart|status|status-all}"
+      ;;
+  esac
+}
+
+# [Kubernetes]
+alias k="kubectl"
+# enhance autocomplete for kubectl
+complete -F __start_kubectl k
+alias kg="kubectl get"
+alias kga="kubectl get all"
+alias ka="kubectl apply -f"
+alias kdes="kubectl describe"
+alias krm="kubectl delete"
+
+alias kw="kubectl get --watch"
+complete -F __start_kubectl kw
+
+# [Docker compose]
+alias doco="docker compose"
+complete -F __start_docker_compose doco

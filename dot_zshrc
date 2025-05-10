@@ -30,6 +30,9 @@ source $HOME/.config/zsh-alfarizi/init.zsh
 # For obsidian
 source $HOME/obsidian-key-api.sh
 
+# For secret
+source $HOME/.zshrc.secret.zsh
+
 # For zoxide
 eval "$(zoxide init --cmd cd zsh)"
 
@@ -51,3 +54,7 @@ esac
 PATH=~/.console-ninja/.bin:$PATH
 # Turso
 export PATH="$PATH:/home/alfarizi/.turso"
+
+# [EDITOR CONFIGS]
+export EDITOR=nvim
+export VISUAL=nvim
